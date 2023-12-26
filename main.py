@@ -1,6 +1,6 @@
-from tkinter import ttk, Tk, Label, Button, Radiobutton, Entry, StringVar, BooleanVar, IntVar, messagebox
+from tkinter import ttk, Tk, Label, Button, Radiobutton, Entry, StringVar, BooleanVar, IntVar, messagebox, Canvas
+import json, webbrowser, random, pandas as pd, plotly.express as px
 from PIL import Image, ImageTk
-import json, webbrowser
 
 class SwiftQuill(Tk):
     def __init__(self):
@@ -40,6 +40,7 @@ class SwiftQuill(Tk):
             self.test_length = self.settings["TestLength"]
             self.literature = self.settings["Literature"]
             self.graph_mean = self.settings["GraphMean"]
+            self.cp_test_length = self.test_length
             
     def save_settings(self):
         current_settings = {
@@ -84,7 +85,7 @@ class SwiftQuill(Tk):
             Radiobutton(self, text="Research Paper Writing", variable=self.op_literature, value=False, cursor='hand2', font=("Noto Sans", 12)).grid(row=5, column=3, padx=10, pady=10)
 
             self.op_test_length = IntVar(value=self.test_length)
-            Label(self, text='Test Length (Minutes)', font=("Noto Sans", 15)).grid(row=6, column=1, padx=10, pady=10)
+            Label(self, text='Test Length (Seconds)', font=("Noto Sans", 15)).grid(row=6, column=1, padx=10, pady=10)
             tle = Entry(self, validate="key", validatecommand=(self.register(lambda v: v.isdigit() or (not v and tle.get().isdigit())), '%P'), textvariable=self.op_test_length)
             tle.grid(row=6, column=2, columnspan=2, padx=10, pady=10)
 
@@ -98,9 +99,84 @@ class SwiftQuill(Tk):
         if self.open_tab != 'Home':
             self.open_tab = 'Home'
             self.title("SwiftQuill - Home")
-            self.clear()
-            Label(self, text="Typing Speed Test", font=("Noto Sans", 25)).grid(row=1, column=1, columnspan=3, pady=(0,30))
+            self.clear(); self.pick_text()
+            Label(self, text="Typing Speed Test", font=("Noto Sans", 25)).grid(row=1, column=1, pady=(0,10))
+
+            self.timer = Label(self, text="Start a Test", font=("Noto Sans", 15))
+            self.timer.grid(row=2, column=1, pady=10)
+
+            self.canvas = Canvas(self, width=700, height=350, background="#c3c3c3", borderwidth=3, highlightcolor="#373737", relief="solid")
+            self.printed_text = self.canvas.create_text(10, 10, anchor="nw", text=self.picked_text, font=("Noto Sans", 15), width=690)
+            self.canvas.grid(row=3, column=1, pady=10)
+
+            self.uie = Entry(self, font=("Noto Sans", 15), relief="flat")
+            self.uie.grid(row=4, column=1, pady=20)
+
+            self.button = Button(self, text="Start", font=("Noto Sans", 15), command=self.start_test)
+            self.button.grid(row=5, column=1)
+
+    def check_input(self, event):
+        if self.uie.get() and event.keysym == 'BackSpace' and self.current_letter > 0:
+            self.current_letter -= 1
+            self.key_pressed += 1
             
+        elif self.uie.get() and event.keysym not in ['Shift_L', 'Shift_R']:
+            self.letter = self.uie.get()[-1]
+            
+            if self.letter == self.picked_text[self.current_letter]:
+                self.canvas.itemconfig(self.printed_text, fill="green")
+                self.uie.delete(0, 'end') if self.letter == ' ' else None
+            else:
+                self.canvas.itemconfig(self.printed_text, fill="red")
+                self.uie.delete(0, 'end') if self.letter == ' ' else None
+                self.fail += 1
+        
+            self.current_letter += 1
+            self.key_pressed += 1
+            if self.current_letter == len(self.picked_text):
+                self.stop_test("Finished!")
+                self.add_data()
+
+    def start_test(self):
+        self.current_letter = 0; self.fail = 0; self.key_pressed = 0
+        self.uie.delete(0, "end")
+        self.uie.bind('<KeyRelease>', self.check_input)
+        self.button.config(text="Stop", command=self.stop_test)
+        self.update_timer() 
+
+    def update_timer(self):
+        self.timer.config(text=self.test_length)
+        self.test_length -= 1
+        self.count = self.timer.after(1000, self.update_timer)
+        if (self.test_length + 2) == 0:
+            self.stop_test("Time's up!")
+            self.add_data()
+
+    def stop_test(self, message='Stopped!'):
+        self.timer.config(text=message)
+        self.uie.delete(0, "end")
+        self.uie.unbind('<KeyRelease>')
+        self.test_length = self.cp_test_length
+        self.canvas.itemconfig(self.printed_text, text=self.picked_text, fill='black')
+        self.button.config(text="Start", command=self.start_test)
+        self.timer.after_cancel(self.count)
+        self.pick_text()
+        
+    def pick_text(self):
+        self.type = "Literature Writing.json" if self.literature else "Research Paper Writing.json"
+        with open(f"./Assets/{self.type}", "r") as f:
+            self.texts = json.load(f)
+            self.picked_text = self.texts[self.language][str(random.randint(1, 5))]
+            
+    def add_data(self):
+        if self.key_pressed > 15:
+            self.accuracy = round(100 - (self.fail / self.key_pressed) * 100, 2)
+            self.WPM = round(self.key_pressed / 5, 2)
+            self.date = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            new_row = pd.DataFrame([{'Date': self.date, 'WPM': self.WPM, 'Accuracy': self.accuracy}])
+            new_row.to_csv('Progress.csv', index=False, mode='a', header=False)
+
     def score_tab(self, event=None):
         if self.open_tab != 'Score':
             self.open_tab = 'Score'
@@ -111,7 +187,7 @@ class SwiftQuill(Tk):
     def clear(self):
         for widget in self.winfo_children():
             widget.destroy() if widget not in self.protected_widgets else None    
-            
+
     def bindings(self):
         self.setting.bind("<Enter>", lambda event: self.underline_on_hover(event, self.setting))
         self.score.bind("<Enter>", lambda event: self.underline_on_hover(event, self.score))
