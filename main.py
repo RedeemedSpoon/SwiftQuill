@@ -153,7 +153,6 @@ class SwiftQuill(Tk):
             
         elif self.uie.get() and event.keysym not in ['Shift_L', 'Shift_R']:
             self.letter = self.uie.get()[-1]
-            print(self.current_letter)
 
             if self.letter == self.picked_text[self.current_letter]:
                 self.canvas.itemconfig(self.current_letter + 1, fill="green")
