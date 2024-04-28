@@ -8,11 +8,11 @@ SwiftQuill is a sophisticated typing speed test application developed using Pyth
 
 ## Features
 
--  **Interactive Interface**: The application's user-friendly design ensures an engaging experience, allowing users to focus solely on their typing performance.
--  **Historical Data**: SwiftQuill enables users to track their progress by storing historical data, facilitating a longitudinal analysis of typing speed and accuracy.
--  **Visual Analytics**: Users can visualize their performance metrics over time through dynamically generated graphs, offering insights into improvement areas.
--  **Language Preferences**: Users have the flexibility to select their preferred language from a diverse list, accommodating multilingual individuals.
--  **Text Type Customization**: SwiftQuill offers a choice between literature writing and research paper writing, catering to different user preferences.
+- **Interactive Interface**: The application's user-friendly design ensures an engaging experience, allowing users to focus solely on their typing performance.
+- **Historical Data**: SwiftQuill enables users to track their progress by storing historical data, facilitating a longitudinal analysis of typing speed and accuracy.
+- **Visual Analytics**: Users can visualize their performance metrics over time through dynamically generated graphs, offering insights into improvement areas.
+- **Language Preferences**: Users have the flexibility to select their preferred language from a diverse list, accommodating multilingual individuals.
+- **Text Type Customization**: SwiftQuill offers a choice between literature writing and research paper writing, catering to different user preferences.
 
 ## Step-by-Step Installation
 
@@ -46,10 +46,11 @@ SwiftQuill is a sophisticated typing speed test application developed using Pyth
 
 ## Contribution
 
--  **Bug Reports**: If you encounter any bugs or issues while using SwiftQuill, please create an issue in the repository or submit a detailed bug report.
--  **Feature Requests**: We welcome suggestions for new features or enhancements to existing functionalities. Please share your ideas by creating a feature request or contributing to ongoing discussions.
--  **Code Contributions**: Developers interested in contributing to SwiftQuill can fork the repository, implement changes or features, and submit a pull request for review.
+- **Bug Reports**: If you encounter any bugs or issues while using SwiftQuill, please create an issue in the repository or submit a detailed bug report.
+- **Feature Requests**: We welcome suggestions for new features or enhancements to existing functionalities. Please share your ideas by creating a feature request or contributing to ongoing discussions.
+- **Code Contributions**: Developers interested in contributing to SwiftQuill can fork the repository, implement changes or features, and submit a pull request for review.
 
 ## License
 
 This project is licensed under the MIT License, granting users the freedom to use, modify, and distribute the application under specified terms. For more information, refer to the [LICENSE](./LICENSE) file included in the repository.
+

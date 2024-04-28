@@ -1,7 +1,8 @@
 {
-    "Language": "English",
-    "Tracking": true,
-    "Literature": true,
-    "TestLength": 60,
-    "GraphMean": 2
+  "Language": "English",
+  "Tracking": true,
+  "Literature": true,
+  "TestLength": 60,
+  "GraphMean": 2
 }
+
